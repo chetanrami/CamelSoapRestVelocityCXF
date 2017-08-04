@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:jaxws="http://cxf.apache.org/blueprint/jaxws"
+           xmlns:cxf="http://cxf.apache.org/blueprint/core"
+           xmlns:camel="http://camel.apache.org/schema/blueprint"
+           xmlns:camelcxf="http://camel.apache.org/schema/blueprint/cxf"
+           xsi:schemaLocation="
+             http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+             http://cxf.apache.org/blueprint/jaxws http://cxf.apache.org/schemas/blueprint/jaxws.xsd
+             http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd">
+
+    <cm:property-placeholder persistent-id="erx.routes.outbound.erxgateway.fileoperation.properties"
+                          update-strategy="reload">
+    <cm:default-properties>
+        <cm:property name="KEY_1" value="VAL_1" />
+        <cm:property name="transactionsXMLReadingQ" value="QForExampleRoutesOutbound" />
+    </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!--ActiveMQ related-->
+    <bean id="activemq"
+          class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>
+
+    <!--split aggregation related-->
+    <bean id="collectionAggregator"
+          class="com.chetan.examples.utils.AggregateIntoList"/>
+
+    <!-- to setup camel servlet with OSGi HttpService -->
+    <reference id="httpService" interface="org.osgi.service.http.HttpService"/>
+    <bean class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
+          init-method="register" destroy-method="unregister">
+        <property name="alias" value="/restSvc"/>
+        <property name="httpService" ref="httpService"/>
+        <property name="servlet" ref="camelServlet"/>
+        <property name="servletName" value="camelServletJavaTestProj"/>
+    </bean>
+    <bean id="camelServlet" class="org.apache.camel.component.servlet.CamelHttpTransportServlet"/>
+
+    <!--camel cxf related-->
+    <camelcxf:cxfEndpoint id="cXFTest" address="/chetan/camelcxfendpoint"
+                     endpointName="a:SOATestEndpoint" serviceName="a:SOATestEndpointService"
+                     wsdlURL="wsdl/test.wsdl" serviceClass="com.chetan.examples.service.SOATestEndpoint"
+                     xmlns:a="http://service.examples.chetan.com" />
+    <bean id="processor" class="com.chetan.examples.beans.CamelProcessor" />
+
+    <!--irshad interface to wsdl-->
+    <camelcxf:cxfEndpoint id="wsdlFromInterfaceEndpoint" address="/wsdlfrominterface/"
+                     serviceClass="com.chetan.examples.servicefromInterface.WsdlFromInterface">
+        <camelcxf:properties>
+            <entry key="dataFormat" value="POJO" />
+        </camelcxf:properties>
+    </camelcxf:cxfEndpoint>
+
+    <!--irshad rest related-->
+    <!-- Start Rest-related declarations -->
+    <camelcxf:rsServer id="restFromInterfaceEndpoint" address="/restfrominterface"
+                  serviceClass="com.chetan.examples.servicefromInterface.RestFromInterface"  loggingFeatureEnabled="true">
+    </camelcxf:rsServer>
+    <!-- End Rest-related declarations -->
+
+
+    <!--camel context related-->
+    <camel:camelContext id="CamelSoapRestVelocityCXF" trace="true" useMDCLogging="true">
+        <camel:package>com.chetan.examples.routes</camel:package>
+    </camel:camelContext>
+
+</blueprint>

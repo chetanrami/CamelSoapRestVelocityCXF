@@ -1,0 +1,9 @@
+<soapenv:Body>
+    <web:GetCitiesByCountry>
+        <web:CountryName>US</web:CountryName>
+    </web:GetCitiesByCountry>
+</soapenv:Body>
+
+
+
+##${headers.EdgeImport_TransactionType}

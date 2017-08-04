@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns1:FirstTag xmlns:ns1="http://service.esb.soa.pub.ebao.com/">
+            <SecondTag>
+                <responseBody>||||Here's the response||||</responseBody>
+            </SecondTag>
+        </ns1:FirstTag>
+    </soap:Body>
+</soap:Envelope>

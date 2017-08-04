@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://service.esb.soa.pub.ebao.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="FirstTag" type="ser:FirstTagType" xmlns:ser="http://service.esb.soa.pub.ebao.com/"/>
+  <xs:complexType name="FirstTagType">
+    <xs:sequence>
+      <xs:element ref="SecondTag"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
